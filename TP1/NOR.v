@@ -8,6 +8,6 @@ module NOR
     output wire [WIDTH - 1 : 0] y
 );
 
-assign y = ~(A & B);
+assign y = ~(A | B);
 
 endmodule
