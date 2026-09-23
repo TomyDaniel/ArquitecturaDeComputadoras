@@ -1,18 +1,159 @@
+// ============================================================
+// ALU_completa.v
+// Todos los módulos del TP1 (AND, OR, NOR, XOR, SUM, SUB, SRA,
+// SRL, ALU) combinados en un único archivo.
+// ============================================================
+
+module AND
+#(
+    parameter WIDTH = 8
+)
+(
+    input  wire [WIDTH-1:0] A,
+    input  wire [WIDTH-1:0] B,
+    output wire [WIDTH-1:0] y
+);
+
+assign y = A & B;
+
+endmodule
+
+
+module OR
+#(
+    parameter WIDTH = 8
+)
+(
+    input  wire [WIDTH-1:0] A,
+    input  wire [WIDTH-1:0] B,
+    output wire [WIDTH-1:0] y
+);
+
+assign y = A | B;
+
+endmodule
+
+
+module NOR
+#(
+    parameter WIDTH = 8
+)
+(
+    input  wire [WIDTH-1:0] A,
+    input  wire [WIDTH-1:0] B,
+    output wire [WIDTH-1:0] y
+);
+
+assign y = ~(A | B);
+
+endmodule
+
+
+module XOR
+#(
+    parameter WIDTH = 8
+)
+(
+    input  wire [WIDTH-1:0] A,
+    input  wire [WIDTH-1:0] B,
+    output wire [WIDTH-1:0] y
+);
+
+wire [WIDTH-1:0] r;
+assign r = ~A & B;
+wire [WIDTH-1:0] t;
+assign t = A & ~B;
+assign y = r | t;
+
+endmodule
+
+
+module SUM
+#(
+    parameter WIDTH = 8
+)
+(
+    input  wire [WIDTH-1:0] A, B,
+    output wire [WIDTH-1:0] y,
+    output wire carry,
+    output wire ovf
+);
+
+wire [WIDTH:0] result_full;
+
+assign result_full = {1'b0, A} + {1'b0, B};
+assign y     = result_full[WIDTH-1:0];
+assign carry = result_full[WIDTH];
+assign ovf   = (A[WIDTH-1] == B[WIDTH-1]) && (y[WIDTH-1] != A[WIDTH-1]);
+
+endmodule
+
+
+module SUB
+#(
+    parameter WIDTH = 8
+)
+(
+    input  wire [WIDTH-1:0] A, B,
+    output wire [WIDTH-1:0] y,
+    output wire carry,
+    output wire ovf
+);
+
+wire [WIDTH:0] result_full;
+
+assign result_full = {1'b0, A} - {1'b0, B};
+assign y     = result_full[WIDTH-1:0];
+assign carry = result_full[WIDTH];
+assign ovf   = (A[WIDTH-1] != B[WIDTH-1]) && (y[WIDTH-1] != A[WIDTH-1]);
+
+endmodule
+
+
+module SRL
+#(
+    parameter WIDTH = 8
+)
+(
+    input  wire [WIDTH-1:0] A,
+    input  wire [$clog2(WIDTH)-1:0] B,
+    output wire [WIDTH-1:0] y
+);
+
+assign y = A >> B;
+
+endmodule
+
+
+module SRA
+#(
+    parameter WIDTH = 8
+)
+(
+    input  wire signed [WIDTH-1:0] A,
+    input  wire [$clog2(WIDTH)-1:0] B,
+    output wire signed [WIDTH-1:0] y
+);
+
+assign y = A >>> B;
+
+endmodule
+
+
 module ALU
 #(
     parameter WIDTH = 8
 )
 (
-    input wire [WIDTH - 1 : 0] A,
-    input wire [WIDTH - 1 : 0] B,
-    input wire [5 : 0] opcode,
-    output reg [WIDTH - 1 : 0] y,
+    input  wire [WIDTH-1:0] A,
+    input  wire [WIDTH-1:0] B,
+    input  wire [5:0] opcode,
+    output reg  [WIDTH-1:0] y,
     output reg  carry_flag,
     output reg  ovf_flag
 );
-
     localparam OP_AND = 6'b100100;
-    localparam OP_OR = 6'b100101;
+    localparam OP_OR  = 6'b100101;
     localparam OP_NOR = 6'b100111;
     localparam OP_XOR = 6'b100110;
     localparam OP_ADD = 6'b100000;
@@ -22,7 +163,7 @@ module ALU
 
     wire [WIDTH-1:0] and_out, or_out, nor_out, xor_out, add_out, sub_out, sra_out, srl_out;
     wire add_carry, add_ovf, sub_carry, sub_ovf;
-    
+
     AND #(.WIDTH(WIDTH)) u_and (.A(A), .B(B), .y(and_out));
     OR  #(.WIDTH(WIDTH)) u_or  (.A(A), .B(B), .y(or_out));
     NOR #(.WIDTH(WIDTH)) u_nor (.A(A), .B(B), .y(nor_out));
@@ -45,5 +186,4 @@ module ALU
             default: begin y = {WIDTH{1'b0}}; carry_flag = 1'b0; ovf_flag = 1'b0;   end
         endcase
     end
-
 endmodule

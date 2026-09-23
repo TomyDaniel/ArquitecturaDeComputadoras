@@ -1,13 +1,14 @@
 module top_basys3_uart
 #(
     parameter WIDTH = 8,
-    parameter DVSR  = 326
+    parameter DVSR  = 651   // 100MHz / (9600 baud * 16) ≈ 651
 )
 (
     input  wire clk,
     input  wire reset,
     input  wire RsRx,
-    output wire RsTx
+    output wire RsTx,
+    output wire [3:0] LED_debug
 );
 
     // ===== Baud Rate Generator =====
@@ -109,7 +110,6 @@ module top_basys3_uart
         w_data = {WIDTH{1'b0}};
 
         case (pstate)
-            // Pide leer si hay un byte disponible; se queda esperando si no
             WAIT_A: if (~rx_empty) begin
                 rd_reg = 1'b1;
                 pnext  = WAIT_B;
@@ -125,14 +125,12 @@ module top_basys3_uart
                 pnext  = SEND_Y;
             end
 
-            // Pide escribir el resultado, si el Tx no está ocupado
             SEND_Y: if (~tx_full) begin
                 wr_reg = 1'b1;
                 w_data = y;
                 pnext  = WAIT_TXY;
             end
 
-            // Espera a que INTF libere tx_full (Tx terminó de mandar el byte)
             WAIT_TXY: if (tx_full == 1'b0) pnext = SEND_FL;
 
             SEND_FL: if (~tx_full) begin
@@ -147,7 +145,6 @@ module top_basys3_uart
         endcase
     end
 
-    // Registros de datos: capturan r_data en el mismo ciclo en que se pide "rd"
     always @(posedge clk) begin
         if (reset) begin
             A_reg      <= 0;
@@ -161,5 +158,8 @@ module top_basys3_uart
             endcase
         end
     end
+
+    // ===== LEDs de debug (temporal, para diagnosticar por hardware) =====
+    assign LED_debug = {rx_empty, tx_full, pstate[1:0]};
 
 endmodule

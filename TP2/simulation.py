@@ -1,7 +1,7 @@
 import serial
 import time
 
-PUERTO = 'COM3'   # Windows: 'COM3', 'COM4', etc. Linux: '/dev/ttyUSB0'
+PUERTO = 'COM12'   # Windows: 'COM3', 'COM4', etc. Linux: '/dev/ttyUSB0'
 BAUD   = 9600
 
 # Opcodes de la consigna
