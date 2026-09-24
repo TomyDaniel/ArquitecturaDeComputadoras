@@ -1,7 +1,7 @@
 import serial
 import time
 
-PUERTO = 'COM12'   # Windows: 'COM3', 'COM4', etc. Linux: '/dev/ttyUSB0'
+PUERTO = 'COM14'   # Windows: 'COM3', 'COM4', etc. Linux: '/dev/ttyUSB0'
 BAUD   = 9600
 
 # Opcodes de la consigna
@@ -19,7 +19,7 @@ CASOS = [
     (0b01111111, 0b00000001, OP_ADD, "ADD (ovf)",   0b10000000, 0, 1),
     (0b00000101, 0b00000010, OP_SUB, "SUB", 0b00000011, 0, 0),
     (0b00000010, 0b00000101, OP_SUB, "SUB (carry)", 0b11111101, 1, 0),
-    (0b10000000, 0b00000001, OP_SUB, "SUB (carry+ovf)", 0b01111111, 1, 1),
+    (0b10000000, 0b00000001, OP_SUB, "SUB (carry+ovf)", 0b01111111, 0, 1),
     (0b11010110, 0b00000010, OP_SRL, "SRL", 0b00110101, 0, 0),
     (0b11010110, 0b00000010, OP_SRA, "SRA", 0b11110101, 0, 0),
 ]

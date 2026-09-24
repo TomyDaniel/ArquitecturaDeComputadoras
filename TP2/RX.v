@@ -23,7 +23,7 @@ module Rx
     reg [2:0] n_reg, n_next;          // contador de bits recibidos (0 a 7)
     reg [D_BIT-1:0] b_reg, b_next;    // shift register donde se arma el byte
 
-    // Registro de estado (memoria) — la única parte con clock
+    // Registro de estado
     always @(posedge clk) begin
         state <= next_state;
         s_reg <= s_next;
@@ -31,7 +31,7 @@ module Rx
         b_reg <= b_next;
     end
 
-    // Lógica de próximo estado — combinacional
+    // Lógica de próximo estado
     always @(*) begin
         next_state   = state;
         rx_done_tick = 1'b0;

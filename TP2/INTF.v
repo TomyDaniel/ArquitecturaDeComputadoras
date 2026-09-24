@@ -6,23 +6,23 @@ module interface_circuit
     input  wire clk,
     input  wire reset,
 
-    // Lado Rx (recepción)
+    // Lado Rx
     input  wire [D_BIT-1:0] rx_data,     // d_out del módulo Rx
     input  wire rx_done_tick,            // "llegó un byte nuevo"
     input  wire rd,                      // la ALU pide leer
-    output reg  rx_empty,                // "no hay dato nuevo para leer"
+    output reg  rx_empty,                // no hay dato nuevo para leer
     output reg  [D_BIT-1:0] r_data,      // el byte que la ALU va a leer
 
-    // Lado Tx (transmisión)
+    // Lado Tx
     input  wire wr,                      // la ALU pide escribir/transmitir
     input  wire [D_BIT-1:0] w_data,      // el byte que la ALU quiere mandar
-    input  wire tx_done_tick,            // "el Tx terminó de mandar el byte"
-    output reg  tx_full,                 // "el Tx está ocupado, no acepta otro byte"
+    input  wire tx_done_tick,            // el Tx terminó de mandar el byte
+    output reg  tx_full,                 // el Tx está ocupado, no acepta otro byte
     output reg  [D_BIT-1:0] tx_data,     // d_in del módulo Tx
-    output reg  tx_start                 // pulso: "arrancá a transmitir"
+    output reg  tx_start                 // pulso: arrancá a transmitir
 );
 
-    // ===== Lado recepción =====
+    // Lado recepción
     always @(posedge clk) begin
         if (reset) begin
             rx_empty <= 1'b1;
@@ -37,9 +37,9 @@ module interface_circuit
         end
     end
 
-    // ===== Lado transmisión =====
+    // Lado transmisión
     always @(posedge clk) begin
-        tx_start <= 1'b0;   // por defecto, sin pulso (se activa solo un ciclo)
+        tx_start <= 1'b0;   // por defecto, sin pulso
 
         if (reset) begin
             tx_full  <= 1'b0;

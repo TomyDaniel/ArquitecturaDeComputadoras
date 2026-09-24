@@ -1,24 +1,21 @@
 module top_basys3_uart
 #(
     parameter WIDTH = 8,
-    parameter DVSR  = 651   // 100MHz / (9600 baud * 16) ≈ 651
+    parameter DVSR  = 651
 )
 (
     input  wire clk,
     input  wire reset,
     input  wire RsRx,
-    output wire RsTx,
-    output wire [3:0] LED_debug
+    output wire RsTx
 );
 
-    // ===== Baud Rate Generator =====
     wire tick;
     baud_rate_gen #(.DVSR(DVSR)) u_baud (
         .clk(clk),
         .tick(tick)
     );
 
-    // ===== Receptor y Transmisor =====
     wire [WIDTH-1:0] rx_data_raw;
     wire rx_done_tick;
     wire [WIDTH-1:0] tx_data_raw;
@@ -45,7 +42,6 @@ module top_basys3_uart
 
     assign RsTx = tx_line;
 
-    // ===== Interfaz (buffer con banderas) =====
     wire rd, wr;
     wire rx_empty, tx_full;
     wire [WIDTH-1:0] r_data;
@@ -67,7 +63,6 @@ module top_basys3_uart
         .tx_start(tx_start_raw)
     );
 
-    // ===== ALU =====
     reg [WIDTH-1:0] A_reg, B_reg;
     reg [5:0] opcode_reg;
     wire [WIDTH-1:0] y;
@@ -82,7 +77,6 @@ module top_basys3_uart
         .ovf_flag(ovf_flag)
     );
 
-    // ===== Controlador del protocolo =====
     localparam [2:0]
         WAIT_A   = 3'b000,
         WAIT_B   = 3'b001,
@@ -158,8 +152,5 @@ module top_basys3_uart
             endcase
         end
     end
-
-    // ===== LEDs de debug (temporal, para diagnosticar por hardware) =====
-    assign LED_debug = {rx_empty, tx_full, pstate[1:0]};
 
 endmodule
